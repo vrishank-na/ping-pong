@@ -5,6 +5,7 @@ from .ball import Ball
 # Game Engine
 
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 class GameEngine:
     def __init__(self, width, height):
@@ -53,3 +54,21 @@ class GameEngine:
         ai_text = self.font.render(str(self.ai_score), True, WHITE)
         screen.blit(player_text, (self.width//4, 20))
         screen.blit(ai_text, (self.width * 3//4, 20))
+
+    def check_game_over(self, screen):
+        if self.player_score == 5 or self.ai_score == 5:
+            screen.fill(BLACK)
+            
+            if self.player_score == 5:
+                msg = "Player Wins!"
+            else:
+                msg = "AI Wins!"
+            
+            text = self.font.render(msg, True, WHITE)
+            text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
+            screen.blit(text, text_rect)
+
+            pygame.display.flip()
+            pygame.time.delay(3000)  # show for 3 seconds
+            pygame.quit()
+            exit()
