@@ -1,4 +1,8 @@
 import pygame
+import os as os
+pygame.init()
+pygame.mixer.init()  # Initialize the mixer for sounds
+
 from .paddle import Paddle
 from .ball import Ball
 
@@ -18,6 +22,13 @@ class GameEngine:
         self.ai = Paddle(width - 20, height // 2 - 50, self.paddle_width, self.paddle_height)
         self.ball = Ball(width // 2, height // 2, 7, 7, width, height)
 
+        # Load sound effects
+        self.sounds = {
+            "paddle": pygame.mixer.Sound(os.path.join("sounds", "hit.wav")),
+            "wall": pygame.mixer.Sound(os.path.join("sounds", "wall.wav")),
+            "score": pygame.mixer.Sound(os.path.join("sounds", "score.wav")),
+        }
+
         self.player_score = 0
         self.ai_score = 0
         self.font = pygame.font.SysFont("Arial", 30)
@@ -32,17 +43,23 @@ class GameEngine:
             self.player.move(10, self.height)
 
     def update(self):
-        self.ball.move()
-        self.ball.check_collision(self.player, self.ai)
+        self.ball.move(self.sounds)
+        self.ball.check_collision(self.player, self.ai, self.sounds)
+
 
         if self.ball.x <= 0:
             self.ai_score += 1
+            self.sounds["score"].play()  # play score sound
             self.ball.reset()
         elif self.ball.x >= self.width:
             self.player_score += 1
+            self.sounds["score"].play()  # play score sound
             self.ball.reset()
 
+
         self.ai.auto_track(self.ball, self.height)
+        self.ball.check_collision(self.player, self.ai, self.sounds)
+
 
     def render(self, screen):
         # Draw paddles and ball

@@ -14,24 +14,29 @@ class Ball:
         self.velocity_x = random.choice([-5, 5])
         self.velocity_y = random.choice([-3, 3])
 
-    def move(self):
+    def move(self, sounds):
         self.x += self.velocity_x
         self.y += self.velocity_y
 
+        # Wall bounce
         if self.y <= 0 or self.y + self.height >= self.screen_height:
             self.velocity_y *= -1
+            sounds["wall"].play()
 
-    def check_collision(self, player, ai):
-    # Player paddle collision
+
+
+    def check_collision(self, player, ai, sounds):
+        # Player paddle collision
         if self.rect().colliderect(player.rect()):
-            self.velocity_x = abs(self.velocity_x)  # ensure ball goes right
-        # Nudge ball outside paddle so it doesn't get stuck
+            self.velocity_x = abs(self.velocity_x)
             self.x = player.rect().right
+            sounds["paddle"].play()  # Play paddle hit sound
 
-    # AI paddle collision
+        # AI paddle collision
         elif self.rect().colliderect(ai.rect()):
-            self.velocity_x = -abs(self.velocity_x)  # ensure ball goes left
+            self.velocity_x = -abs(self.velocity_x)
             self.x = ai.rect().left - self.width
+            sounds["paddle"].play()  # Play paddle hit sound
 
     def reset(self):
         self.x = self.original_x
